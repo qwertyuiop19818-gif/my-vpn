@@ -1,4 +1,4 @@
-name: Build iOS VPN
+name: Build iOS VPN (Sing-Box)
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,10 +8,15 @@ jobs:
   build:
     runs-on: macos-14
     steps:
-      - name: Clone Repository
+      - name: Clone Sing-Box Repository
         run: |
-          git clone https://github.com/hiddify/hiddify-app.git .
-          git checkout main
+          # Клонируем официальный репозиторий sing-box
+          git clone https://github.com/SagerNet/sing-box.git .
+          # Переходим в папку с Flutter-клиентом
+          cd clients/flutter
+          # Переносим всё в корень для удобства сборки гитхаба
+          mv * ../../
+          cd ../../
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -40,10 +45,10 @@ jobs:
         run: |
           mkdir Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r my-vpn.ipa Payload
+          zip -r sing-box-vpn.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-vpn-app
-          path: my-vpn.ipa
+          path: sing-box-vpn.ipa
