@@ -15,15 +15,17 @@ jobs:
 
       - name: Create Clean App Project
         run: |
-          # Создаем чистый проект с нуля прямо на сервере
+          # Создаем чистый проект
           flutter create --org com.myvpn --platforms ios vpn_app
           cd vpn_app
           
-          # Добавляем плагин ядра sing-box для работы с VLESS/REALITY
-          flutter pub add sing_box_flutter
+          # Прописываем правильный путь к плагину sing-box напрямую из их Git
+          echo "  sing_box_flutter:" >> pubspec.yaml
+          echo "    git:" >> pubspec.yaml
+          echo "      url: https://github.com/SagerNet/sing-box-flutter.git" >> pubspec.yaml
           
-          # Переносим файлы в корень для сборщика
-          mv * .[^.]* ..
+          # Переносим файлы в корень для сборщика гитхаба
+          mv * .[^.]* .. || true
           cd ..
 
       - name: Set up Java
