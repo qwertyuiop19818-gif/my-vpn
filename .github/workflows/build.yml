@@ -1,4 +1,4 @@
-name: Build iOS VPN (Universal)
+name: Create and Build Clean iOS VPN
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,21 +8,29 @@ jobs:
   build:
     runs-on: macos-14
     steps:
-      - name: Clone Lightweight Client
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Create Clean App Project
         run: |
-          # Клонируем готовый Flutter-клиент с чистой структурой
-          git clone --depth 1 https://github.com/ctoolkit/flutter_vpn.git .
+          # Создаем чистый проект с нуля прямо на сервере
+          flutter create --org com.myvpn --platforms ios vpn_app
+          cd vpn_app
+          
+          # Добавляем плагин ядра sing-box для работы с VLESS/REALITY
+          flutter pub add sing_box_flutter
+          
+          # Переносим файлы в корень для сборщика
+          mv * .[^.]* ..
+          cd ..
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
 
       - name: Get Dependencies
         run: flutter pub get
@@ -40,10 +48,10 @@ jobs:
         run: |
           mkdir Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r vpn-client.ipa Payload
+          zip -r clean-vpn.ipa Payload
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-vpn-app
-          path: vpn-client.ipa
+          path: clean-vpn.ipa
