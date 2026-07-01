@@ -1,4 +1,4 @@
-name: Build iOS VPN (Stable)
+name: Build iOS VPN (Universal)
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,11 +8,10 @@ jobs:
   build:
     runs-on: macos-14
     steps:
-      - name: Clone Stable Client
+      - name: Clone Lightweight Client
         run: |
-          # Клонируем чисто клиентский репозиторий, где всё сразу в корне
-          git clone --depth 1 https://github.com/SagerNet/sing-box-for-android.git .
-          # Этот репозиторий универсален для Flutter (и Android, и iOS)
+          # Клонируем готовый Flutter-клиент с чистой структурой
+          git clone --depth 1 https://github.com/ctoolkit/flutter_vpn.git .
 
       - name: Set up Java
         uses: actions/setup-java@v4
